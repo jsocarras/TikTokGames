@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pong Game</title>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+  }
+  #gameCanvas {
+    background-color: #000;
+    border: 1px solid #fff;
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const paddleWidth = 10;
+  const paddleHeight = 75;
+  let paddleY = (canvas.height - paddleHeight) / 2;
+  const playerPaddleX = 0;
+  const aiPaddleX = canvas.width - paddleWidth;
+  const ballSize = 10;
+  let ballX = canvas.width / 2;
+  let ballY = canvas.height / 2;
+  let ballSpeedX = 2;
+  let ballSpeedY = 2;
+  let score = 0;
+
+  function drawPaddle(x, y) {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(x, y, paddleWidth, paddleHeight);
+  }
+
+  function drawBall() {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(ballX, ballY, ballSize, ballSize);
+  }
+
+  function moveBall() {
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+
+    if (ballY <= 0 || ballY >= canvas.height - ballSize) {
+      ballSpeedY = -ballSpeedY;
+    }
+
+    if (ballX <= playerPaddleX + paddleWidth) {
+      if (ballY > paddleY && ballY < paddleY + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+      }
+    }
+
+    if (ballX >= aiPaddleX - paddleWidth) {
+      if (ballY > paddleY && ballY < paddleY + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+      }
+    }
+  }
+
+  function clearCanvas() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function gameLoop() {
+    clearCanvas();
+    drawPaddle(playerPaddleX, paddleY);
+    drawPaddle(aiPaddleX, paddleY);
+    drawBall();
+    moveBall();
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  function movePaddle(event) {
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    paddleY = mouseY - paddleHeight / 2;
+  }
+
+  canvas.addEventListener("mousemove", movePaddle);
+
+  gameLoop();
+</script>
+</body>
+</html>
